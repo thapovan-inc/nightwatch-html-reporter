@@ -1,14 +1,15 @@
 doctype html
 html(lang="en")
-	head
-		meta(charset='utf-8')
-		title Nightwatch HTML Report - Compact Theme
-		style(type="text/css")
-			include ../default/styles.css
-			include styles.css
+    head
+        meta(charset='utf-8')
+        title Nightwatch Report
+        link(type='image/vnd.microsoft.icon' href= testRun.appFaviconUrl rel='icon')
+        link(href='https://www.palassets.com/fonts/Roboto.css', rel='stylesheet', type='text/css')
+        style(type="text/css")
+            include styles.css
 
-		script(type='text/javascript')
-			include ../default/script.js
+        script(type='text/javascript')
+            include ../default/script.js
 
-	body
-		include ../default/report.pug
+    body
+        include ../default/report.pug

@@ -1,32 +1,112 @@
-h1 Nightwatch Results
-#container
-	if !hideSuccess
-		a.toggleSuccess(href='#') Show/Hide Successes
+div#header
+    div.container
+        img(class='app-logo' src=testRun.appLogoUrl)
+each pkg,index in testRun.packages
+    - var message='';
+    - if (pkg.environment){ message = message+ "Env: " + pkg.environment;}
+    - if (pkg.country){ message = message+ ", Country: " + pkg.country }
+    - if(pkg.summary){ message = message + " , Summary: " + pkg.summary;}
+    - if(pkg.browser){message = message+ ", Browser: " + pkg.browser;}
+    div#content
+        div.container
+            div.title
+                span= "Report Generated: " + pkg.date
+                h2="Test Results - " + pkg.name
+            div.result
+                h5= pkg.tests + " Tests - "
+                    span= "Passed: " + (pkg.tests - pkg.failures) + ", Failed: " + pkg.failures
+                if message
+                    p= message
 
-	if testRun.errmessages.length > 0
-		div.errmessages
-			h2 Errors
-				span.count= ' (' + testRun.errmessages.length + ')'
-			ul.errors
-				each msg in testRun.errmessages
-					li= msg
-
-	each pkg in testRun.packages
-		div(class= (pkg.isFailure) ? 'package error' : 'package success')
-			h2.name!= (pkg.isFailure) ? '&#10005; ' + pkg.name : '&#10003; ' + pkg.name
-			div.suites
-				each suite in pkg.suites
-					div(class= (suite.isFailure) ? 'suite error' : 'suite success')
-						h3.name= suite.name
-						ul.testcases
-							each testCase in suite.cases
-								li(class= (testCase.isFailure) ? 'testcase error' : 'testcase success')
-									if testCase.isFailure
-										div.status &#10005;
-										div.name= testCase.message + " " + testCase.failure
-										each sshot in testCase.screenshots
-											div.screenshot
-												img(src= sshot)
-									else
-										div.status &#10003;
-										div.name= testCase.message + ((testCase.skipped) ? " (skipped)" : "")
+            div.main-content
+                div.panel.test-scenarios
+                    div.panel-title
+                        if index === 0
+                            div.links
+                                a#linkExpand Expand
+                                a#linkCollapse Collapse
+                        if pkg.failures > 0
+                            div.filters
+                                span
+                                    input(type='checkbox' name='filters' id='showFailures')
+                                    label(for='showFailures') Show Failures
+                        h4 Test Result Summary
+                            - var count = 0;
+                    div.panel-content
+                        table(cellpadding='0' cellspacing='0' border='0')
+                            tr
+                                th
+                                    span
+                                th
+                                    span Test
+                                th
+                                    span Passed
+                                th
+                                    span Failed
+                                th
+                                    span Errors
+                                th
+                                    span Skipped
+                                th
+                                    span Duration
+                            each suite, i in pkg.suites
+                                tr(id='test-' + suite.pkgName + i, class= (suite.isFailure) ? 'failed' : 'passed')
+                                    td
+                                        span
+                                            i(class= (suite.isFailure) ? 'icon-error' : 'icon-success')
+                                    td
+                                        span
+                                            a.taskname(class={'has-child': suite.cases.length > 0})
+                                            a.taskname= suite.name
+                                    td
+                                        span= suite.passed
+                                    td
+                                        span= suite.failures
+                                    td
+                                        span= suite.errors
+                                    td
+                                        span= suite.skipped
+                                    td
+                                        span= suite.time + "s"
+                                tr.subtask.hide(id='scenario-test-' + suite.pkgName + i)
+                                    td(colspan='7')
+                                        table(cellpadding='0' cellspacing='0' border='0')
+                                            each testCase in suite.cases
+                                                if suite.isFailure && testCase.isFailure
+                                                    tr(class= (testCase.isFailure) ? 'testcase-failed' : 'testcase-passed')
+                                                        td
+                                                            span
+                                                                i(class= (testCase.isFailure) ? 'icon-error' : 'icon-success')
+                                                        td
+                                                            span.error=testCase.isFailure
+                                                        td
+                                                            each sshot in testCase.screenshots
+                                                                span
+                                                                    a
+                                                                        img.thumbnail(src= sshot)
+                                                                div.modal.hide
+                                                                    div.modal-dialog
+                                                                        div.modal-content
+                                                                            div.modal-header
+                                                                                a.close &times;
+                                                                            div.modal-body
+                                                                                img(src= sshot)
+                                                else
+                                                    tr(class= (testCase.isFailure) ? 'testcase-failed' : 'testcase-passed')
+                                                        td
+                                                            span
+                                                                i(class= (testCase.isFailure) ? 'icon-error' : 'icon-success')
+                                                        td
+                                                            span= testCase.message  || 'Test'
+                                                        td
+                                                            each sshot in testCase.screenshots
+                                                                span
+                                                                    a
+                                                                        img.thumbnail(src= sshot)
+                                                                div.modal.hide
+                                                                    div.modal-dialog
+                                                                        div.modal-content
+                                                                            div.modal-header
+                                                                                a.close &times;
+                                                                            div.modal-body
+                                                                                img(src= sshot)
